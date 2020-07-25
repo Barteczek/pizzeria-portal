@@ -1,5 +1,11 @@
 @import '../../../styles/settings.scss';
 
 .component {
-  padding: $base-size;
+  padding: $base-size 0;
+  display: flex;
+
+}
+
+.card {
+  margin: $base-size;
 }

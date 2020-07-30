@@ -8,6 +8,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
 
 class Waiter extends React.Component {
   static propTypes = {
@@ -17,6 +20,11 @@ class Waiter extends React.Component {
       active: PropTypes.bool,
       error: PropTypes.any,
     }),
+    changeStatus: PropTypes.func,
+  }
+
+  state = {
+    changeStatusVisibility: false,
   }
 
   componentDidMount(){
@@ -24,39 +32,46 @@ class Waiter extends React.Component {
     fetchTables();
   }
 
-  renderActions(status){
-    switch (status) {
+  renderActions(row){
+    switch (row.status) {
       case 'free':
         return (
           <>
-            <Button>thinking</Button>
-            <Button>new order</Button>
+            <Button onClick={() => this.setStatus(row, 'thinking')}>thinking</Button>
+            <Button onClick={() => this.setStatus(row, 'new order')}>new order</Button>
           </>
         );
       case 'thinking':
         return (
-          <Button>new order</Button>
+          <Button onClick={() => this.setStatus(row, 'new order')}>new order</Button>
         );
       case 'ordered':
         return (
-          <Button>prepared</Button>
+          <Button onClick={() => this.setStatus(row, 'prepared')}>prepared</Button>
         );
       case 'prepared':
         return (
-          <Button>delivered</Button>
+          <Button onClick={() => this.setStatus(row, 'delivered')}>delivered</Button>
         );
       case 'delivered':
         return (
-          <Button>paid</Button>
+          <Button onClick={() => this.setStatus(row, 'paid')}>paid</Button>
         );
       case 'paid':
         return (
-          <Button>free</Button>
+          <Button onClick={() => this.setStatus(row, 'free')}>free</Button>
         );
       default:
         return null;
     }
   }
+
+  setStatus(row, status) {
+    const { changeStatus } = this.props;
+    row.status = status;
+    changeStatus(row);
+  }
+  
 
   render() {
     const { loading: { active, error }, tables } = this.props;
@@ -103,12 +118,45 @@ class Waiter extends React.Component {
                     )}
                   </TableCell>
                   <TableCell>
-                    {this.renderActions(row.status)}
+                    {this.renderActions(row)}
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+          <FormControl variant="outlined" className={`${styles.formControl} ${this.state.changeStatusVisibility ? styles.active : ''}`}>
+            <div className={styles.selectContainer}>
+              <Button 
+                className={styles.closeButton}
+                onClick={() => this.setState({changeStatusVisibility: false})}
+              >
+                <div className={styles.close}>
+                  <span></span>
+                  <span></span>
+                </div>
+              </Button>
+              <InputLabel htmlFor="outlined-age-native-simple">Change status</InputLabel>
+              <Select
+                className={styles.select}
+                native
+                // value={row.status}
+                // onChange={handleChange}
+                inputProps={{
+                  name: 'status',
+                  id: 'outlined-age-native-simple',
+                }}
+              >
+                <option aria-label="None" value="" />
+                <option value={'free'}>free</option>
+                <option value={'thinking'}>thinking</option>
+                <option value={'ordered'}>ordered</option>
+                <option value={'prepared'}>prepared</option>
+                <option value={'delivered'}>delivered</option>
+                <option value={'paid'}>paid</option>
+              </Select>
+              <Button onClick={event => this.handleStatus(event)}>Change status</Button>
+            </div>
+          </FormControl>
         </Paper>
       );
     }

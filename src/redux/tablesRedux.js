@@ -13,19 +13,21 @@ const createActionName = name => `app/${reducerName}/${name}`;
 const FETCH_START = createActionName('FETCH_START');
 const FETCH_SUCCESS = createActionName('FETCH_SUCCESS');
 const FETCH_ERROR = createActionName('FETCH_ERROR');
+const CHANGE_STATUS = createActionName('CHANGE_STATUS');
 
 /* action creators */
 export const fetchStarted = payload => ({ payload, type: FETCH_START });
 export const fetchSuccess = payload => ({ payload, type: FETCH_SUCCESS });
 export const fetchError = payload => ({ payload, type: FETCH_ERROR });
+export const changeStatus = payload => ({ payload, type: CHANGE_STATUS });
 
 /* thunk creators */
 export const fetchFromAPI = () => {
-  return (dispatch, getState) => {
+  return (dispatch) => {
     dispatch(fetchStarted());
 
     Axios
-      .get(`${api.url}/${api.tables}`)
+      .get(`${api.url}/api/${api.tables}`)
       .then(res => {
         dispatch(fetchSuccess(res.data));
       })
@@ -34,6 +36,23 @@ export const fetchFromAPI = () => {
       });
   };
 };
+
+export const changeAPI = (element) => {
+  
+  return (dispatch) => {
+
+    Axios
+      .post(`${api.url}/api/${api.tables}`, element)
+      .then(res => {
+        dispatch(changeStatus(res.data));
+      })
+      .catch(err => {
+        dispatch(fetchError(err.message || true));
+      });
+  };
+};
+
+
 
 /* reducer */
 export default function reducer(statePart = [], action = {}) {

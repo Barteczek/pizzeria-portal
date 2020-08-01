@@ -8,9 +8,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 
 class Waiter extends React.Component {
   static propTypes = {
@@ -25,6 +24,8 @@ class Waiter extends React.Component {
 
   state = {
     changeStatusVisibility: false,
+    newOrderTable: 0,
+    order: null,
   }
 
   componentDidMount(){
@@ -38,12 +39,12 @@ class Waiter extends React.Component {
         return (
           <>
             <Button onClick={() => this.setStatus(row, 'thinking')}>thinking</Button>
-            <Button onClick={() => this.setStatus(row, 'new order')}>new order</Button>
+            <Button onClick={() => this.handleNewOrder(row)}>new order</Button>
           </>
         );
       case 'thinking':
         return (
-          <Button onClick={() => this.setStatus(row, 'new order')}>new order</Button>
+          <Button onClick={() => this.handleNewOrder(row)}>new order</Button>
         );
       case 'ordered':
         return (
@@ -69,10 +70,35 @@ class Waiter extends React.Component {
   setStatus(row, status) {
     const { changeStatus } = this.props;
     row.status = status;
-    console.log(row);
+    row.order = (status === 'free' ? '' : row.order);
     changeStatus(row);
   }
+
+  handleNewOrder(row) {
+    this.setState({changeStatusVisibility: true, newOrderTable: row.id});
+  }
+
+  handleSubmitOrder() {
+    const tables = this.props.tables;
+    const {newOrderTable, order} = this.state;
+
+    tables.forEach((element) => {
+      if (element.id === newOrderTable) {
+        element.order = order;
+        this.setStatus(element, 'ordered');
+      }
+    });
+
+    this.resetState();
+  }
+
+  handleInputChange(event) {
+    this.setState({order: event.target.value});
+  }
   
+  resetState() {
+    this.setState({changeStatusVisibility: false, newOrderTable: 0, order: null});
+  }
 
   render() {
     const { loading: { active, error }, tables } = this.props;
@@ -81,6 +107,7 @@ class Waiter extends React.Component {
       return (
         <Paper className={styles.component}>
           <p>Loading...</p>
+          
         </Paper>
       );
     } else if(error) {
@@ -125,39 +152,24 @@ class Waiter extends React.Component {
               ))}
             </TableBody>
           </Table>
-          <FormControl variant="outlined" className={`${styles.formControl} ${this.state.changeStatusVisibility ? styles.active : ''}`}>
-            <div className={styles.selectContainer}>
+          <form className={`${styles.form} ${this.state.changeStatusVisibility ? styles.active : ''}`} noValidate autoComplete="off">
+            <div className={styles.inputContainer}>
               <Button 
                 className={styles.closeButton}
-                onClick={() => this.setState({changeStatusVisibility: false})}
+                onClick={() => this.resetState()}
               >
                 <div className={styles.close}>
                   <span></span>
                   <span></span>
                 </div>
               </Button>
-              <InputLabel htmlFor="outlined-age-native-simple">Change status</InputLabel>
-              <Select
-                className={styles.select}
-                native
-                // value={row.status}
-                // onChange={handleChange}
-                inputProps={{
-                  name: 'status',
-                  id: 'outlined-age-native-simple',
-                }}
-              >
-                <option aria-label="None" value="" />
-                <option value={'free'}>free</option>
-                <option value={'thinking'}>thinking</option>
-                <option value={'ordered'}>ordered</option>
-                <option value={'prepared'}>prepared</option>
-                <option value={'delivered'}>delivered</option>
-                <option value={'paid'}>paid</option>
-              </Select>
-              <Button onClick={event => this.handleStatus(event)}>Change status</Button>
+              <Typography variant="body2" component="p">
+                Table: {this.state.newOrderTable} <br></br> 
+              </Typography>
+              <TextField className="input" id="order" label="Order" onChange={(event) => this.handleInputChange(event)}/>
+              <Button onClick={() => this.handleSubmitOrder()}>Submit</Button>
             </div>
-          </FormControl>
+          </form>
         </Paper>
       );
     }

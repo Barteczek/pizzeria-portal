@@ -4,7 +4,7 @@
   padding: $base-size 0;
 }
 
-.formControl {
+.form {
   position: absolute;
   top: 0;
   left: 0;
@@ -13,16 +13,17 @@
   background-color: rgba(#000000, 0.6);
   display: none;
 
-  .selectContainer {
+  .inputContainer {
     width: 300px;
     height: 200px;
     background-color: #ffffff;
     display: flex;
-    align-items: center;
+    align-items: left;
     justify-content: space-evenly;
     color: #000000;
     border-radius: 5px;
     flex-direction: column;
+    padding: 0 20px;
   }
 }
 
@@ -34,7 +35,7 @@
 
 .closeButton {
   width: 100%;
-  margin-top: -10px;
+  padding: 10px 0;
 }
 
 .close {
@@ -42,16 +43,17 @@
   flex-direction: column;
   width: 100%;
   align-items: flex-end;
+  
 
   span {
-    width: 30px;
-    height: 5px;
+    width: 20px;
+    height: 3px;
     background-color: #000000;
     &:first-of-type {
       transform: rotate(45deg);
     }
     &:last-of-type {
-      margin-top: -5px;
+      margin-top: -3px;
       transform: rotate(-45deg);
     }
   }

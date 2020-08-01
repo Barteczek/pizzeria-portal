@@ -37,23 +37,15 @@ export const fetchFromAPI = () => {
   };
 };
 
-export const changeAPI = (element) => {
-  
-  const data = this;
-
-  console.log(this);
+export const changeAPI = ({id, ...element}) => {
   return (dispatch) => {
-
     Axios
-      .post(`${api.url}/api/${api.tables}`, {element})
+      .put(`${api.url}/api/${api.tables}/${id}`, {...element})
       .then(res => {
-        console.log(res);
+        dispatch(changeStatus(res.data));
       });
-      
   };
 };
-
-
 
 /* reducer */
 export default function reducer(statePart = [], action = {}) {
@@ -66,6 +58,7 @@ export default function reducer(statePart = [], action = {}) {
           error: false,
         },
       };
+      
     }
     case FETCH_SUCCESS: {
       return {
@@ -83,6 +76,19 @@ export default function reducer(statePart = [], action = {}) {
         loading: {
           active: false,
           error: action.payload,
+        },
+      };
+    }
+    case CHANGE_STATUS: {
+      statePart.data.forEach((element) => (
+        element.id === action.payload.id ? element = action.payload : ''
+      ));
+
+      return {
+        ...statePart,
+        loading: { 
+          active: false,
+          error: false,
         },
       };
     }

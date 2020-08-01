@@ -69,6 +69,7 @@ class Waiter extends React.Component {
   setStatus(row, status) {
     const { changeStatus } = this.props;
     row.status = status;
+    console.log(row);
     changeStatus(row);
   }
   

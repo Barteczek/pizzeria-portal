@@ -39,16 +39,17 @@ export const fetchFromAPI = () => {
 
 export const changeAPI = (element) => {
   
+  const data = this;
+
+  console.log(this);
   return (dispatch) => {
 
     Axios
-      .post(`${api.url}/api/${api.tables}`, element)
+      .post(`${api.url}/api/${api.tables}`, {element})
       .then(res => {
-        dispatch(changeStatus(res.data));
-      })
-      .catch(err => {
-        dispatch(fetchError(err.message || true));
+        console.log(res);
       });
+      
   };
 };
 
